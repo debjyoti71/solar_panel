@@ -16,7 +16,7 @@ url = "https://archive-api.open-meteo.com/v1/archive"
 params = {
     "latitude":  lat,
     "longitude":  lon,
-    "start_date": "2024-09-19",
+    "start_date": "2023-09-26",
     "end_date": "2024-09-26",
     "hourly": ["temperature_2m", "precipitation", "rain", "cloud_cover", "wind_speed_10m", "direct_radiation"],
     "daily": ["sunrise", "sunset", "daylight_duration"],
