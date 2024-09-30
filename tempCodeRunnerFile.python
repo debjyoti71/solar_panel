@@ -1,0 +1,20 @@
+import requests
+
+def get_solcast_data(api_url):
+    # Making a GET request to the specified API URL
+    response = requests.get(api_url)
+    
+    # Check if the response was successful
+    if response.status_code == 200:
+        return response.json()  # Return the JSON data if successful
+    else:
+        return f"Error: {response.status_code} - {response.text}"  # Return an error message
+
+# Specify the API URL
+api_url = "https://api.solcast.com.au/rooftop_sites/5244-6a3f-eb09-3ae9/estimated_actuals?format=json"
+
+# Fetch the solar data
+solar_data = get_solcast_data(api_url)
+
+# Print the fetched solar data
+print(solar_data)
