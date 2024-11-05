@@ -1,20 +1,37 @@
-import requests
+#movie ticket
 
-def get_solcast_data(api_url):
-    # Making a GET request to the specified API URL
-    response = requests.get(api_url)
-    
-    # Check if the response was successful
-    if response.status_code == 200:
-        return response.json()  # Return the JSON data if successful
-    else:
-        return f"Error: {response.status_code} - {response.text}"  # Return an error message
+#enter the no. of ticket 35 
+#do you want ref y
+#do you have coupon code y
+#enter the circle k
+#ticket cost 4065.25
 
-# Specify the API URL
-api_url = "https://api.solcast.com.au/rooftop_sites/5244-6a3f-eb09-3ae9/estimated_actuals?format=json"
+#enter ticket on of thicket 1
 
-# Fetch the solar data
-solar_data = get_solcast_data(api_url)
+#min of 5 ticket req
 
-# Print the fetched solar data
-print(solar_data)
+num_tickets = int(input("Enter the number of tickets you want: "))
+if num_tickets < 5:
+    print("Minimum 5 tickets required.")
+else:
+    ref_choice = input("Do you want a refreshment ticket? (y/n): ")
+    coupon_choice = input("Do you have a coupon code? (y/n): ")
+    circle_choice = input("Enter the circle you want to sit in (k/q): ")
+
+    ticket_cost = 0
+    if circle_choice.lower() == 'k':
+        ticket_cost = 75
+    elif circle_choice.lower() == 'q':
+        ticket_cost = 150
+
+    if num_tickets > 20:
+        ticket_cost *= 0.9
+
+    if coupon_choice.lower() == 'y':
+        ticket_cost *= 0.98
+
+    if ref_choice.lower() == 'y':
+        ticket_cost += 50
+
+    total_cost = ticket_cost * num_tickets
+    print("The total cost of the ticket is: ", total_cost)

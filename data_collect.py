@@ -16,8 +16,8 @@ url = "https://archive-api.open-meteo.com/v1/archive"
 params = {
     "latitude":  lat,
     "longitude":  lon,
-    "start_date": "2023-09-26",
-    "end_date": "2024-09-26",
+    "start_date": "2023-10-27",
+    "end_date": "2024-10-27",
     "hourly": ["temperature_2m", "precipitation", "rain", "cloud_cover", "wind_speed_10m", "direct_radiation"],
     "daily": ["sunrise", "sunset", "daylight_duration"],
     "timezone": "Asia/Kolkata",
@@ -98,7 +98,7 @@ hourly_dataframe["total_correction_factor"] = (
 hourly_dataframe["adjusted_efficiency"] = base_efficiency * hourly_dataframe["total_correction_factor"]
 
 # Calculate hourly energy production (in kWh) considering panel size (2 kW panel assumed for this example)
-correction_factor = 9.0523
+correction_factor = 8.3847
 panel_size_kw = 1  # 2 kW panel
 hourly_dataframe["energy_kwh"] = hourly_dataframe["direct_radiation"] * hourly_dataframe["adjusted_efficiency"] * panel_size_kw / 1000
 
@@ -109,8 +109,11 @@ total_energy_kwh_per_day = total_energy_kwh_per_day * correction_factor
 print(f"Collecting data from {pd.to_datetime(hourly.Time(), unit='s', utc=True)} to {pd.to_datetime(hourly.TimeEnd(), unit='s', utc=True)}")    
 
 # Output the total energy production
-print(f"Total Energy Produced by a {panel_size_kw} kW solar panel: {total_energy_kwh_per_day:.2f} kWh")
+#print(f"Total Energy Produced by a {panel_size_kw} kW solar panel: {total_energy_kwh_per_day:.2f} kWh")
 
 # Average energy produced per day (if you have multiple days)
 average_daily_energy_kwh = total_energy_kwh_per_day / len(hourly_dataframe['date'].dt.date.unique())
 print(f"Average Daily Energy Production: {average_daily_energy_kwh:.2f} kWh")
+
+energy_consumption = float(input("Enter the energy consumption in kWh: "))
+print(f"Number of solar panels needed: {energy_consumption / average_daily_energy_kwh:.2f}kw")    

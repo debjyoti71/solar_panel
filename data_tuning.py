@@ -15,7 +15,7 @@ params = {
     "latitude": 22.737195,
     "longitude": 88.190791,
     "start_date": "2024-07-15",
-    "end_date": "2024-09-27",
+    "end_date": "2024-10-27",
     "hourly": ["temperature_2m", "precipitation", "rain", "cloud_cover", "wind_speed_10m", "direct_radiation"],
     "daily": ["sunrise", "sunset", "daylight_duration"],
     "timezone": "Asia/Singapore",
@@ -105,7 +105,7 @@ hourly_dataframe["energy_kwh"] = hourly_dataframe["direct_radiation"] * hourly_d
 total_energy_kwh_per_day = hourly_dataframe["energy_kwh"].sum()
 
 # Fine-tuning the correction factor
-actual_energy_produced = 353  # Actual energy produced in kWh
+actual_energy_produced = 520  # Actual energy produced in kWh
 predicted_energy_kwh = total_energy_kwh_per_day  # Initial predicted energy from the model
 correction_factor = 1.0  # Start with a correction factor of 1.0
 tolerance = 0.01  # Acceptable tolerance for error
