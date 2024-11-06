@@ -1,3 +1,4 @@
 actual_value.py
 data_collect.py
 data_tuning.py
+.cache.sqlite
