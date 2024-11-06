@@ -12,15 +12,16 @@
 <body>
     <h1>Solar Panel Energy Calculator</h1>
     
-    <form method="POST">
+    <form method="POST" action="/" id="solarCalculator">
         <label for="energy_consumption">Your Energy Consumption (in kWh):</label>
         <input type="text" name="energy_consumption" id="energy_consumption" placeholder="e.g., 300" required><br><br>
         
         <h3>Select Location</h3>
         <input type="radio" id="manual" name="location_option" value="manual" checked>
         <label for="manual">Enter Latitude and Longitude</label><br>
-        <input type="text" name="latitude" id="latitude_input" placeholder="Latitude" required>
-        <input type="text" name="longitude" id="longitude_input" placeholder="Longitude" required><br><br>
+        <input type="text" name="latitude" id="latitude_input" placeholder="Latitude" required oninput="updateMap()">
+        <input type="text" name="longitude" id="longitude_input" placeholder="Longitude" required oninput="updateMap()">
+        <button type="button" onclick="detectLocation()">Use GPS Location</button><br><br>
         
         <input type="radio" id="map_option" name="location_option" value="map">
         <label for="map_option">Drop a Pin on the Map</label><br>
@@ -31,17 +32,19 @@
     </form>
 
     {% if total_energy_kwh is defined %}
-        <h2>Results</h2>
-       
-        <p><strong>Average Daily Energy Production:</strong> {{ average_daily_energy_kwh }} kWh</p>
-        <p><strong>Number of 1kw Solar Panels Needed:</strong> {{ panels_needed | round(2) }} panels</p>
+        <div class="results">
+            <h2>Results</h2>
+            <p><strong>Location:</strong> {{ location_address or "Unable to retrieve address" }}</p>
+            <p><strong>Energy Consumption:</strong> {{ energy_consumption }} kWh</p>
+            <p><strong>Average Daily Energy Production:</strong> {{ average_daily_energy_kwh | round(2) }} kWh</p>
+            <p><strong>Number of 1 kW Solar Panels Needed:</strong> {{ panels_needed | round(2) }} panels</p>
+        </div>
     {% endif %}
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
         var map = L.map('map').setView([22.737195, 88.190791], 5); // Default view (India)
 
-        // Load and display tile layer on the map
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
         }).addTo(map);
@@ -54,9 +57,11 @@
                 if (event.target.value === 'map') {
                     document.getElementById('latitude_input').value = '';
                     document.getElementById('longitude_input').value = '';
-                    document.getElementById('map').style.display = 'block'; // Show map
+                    document.getElementById('map').style.display = 'block';
                 } else {
-                    document.getElementById('map').style.display = 'none'; // Hide map
+                    document.getElementById('map').style.display = 'none';
+                    document.getElementById('latitude_input').value = '';
+                    document.getElementById('longitude_input').value = '';
                 }
             });
         });
@@ -66,17 +71,55 @@
             var lat = e.latlng.lat;
             var lon = e.latlng.lng;
 
-            // Set latitude and longitude in input fields
-            document.getElementById('latitude_input').value = lat.toFixed(6); // 6 decimal places
-            document.getElementById('longitude_input').value = lon.toFixed(6); // 6 decimal places
+            document.getElementById('latitude_input').value = lat.toFixed(6);
+            document.getElementById('longitude_input').value = lon.toFixed(6);
 
-            // Update or add a marker on map
             if (marker) {
                 marker.setLatLng(e.latlng);
             } else {
                 marker = L.marker(e.latlng).addTo(map);
             }
         });
+
+        // Function to detect user location via GPS
+        function detectLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+
+                    document.getElementById('latitude_input').value = lat.toFixed(6);
+                    document.getElementById('longitude_input').value = lon.toFixed(6);
+
+                    map.setView([lat, lon], 12);
+                    if (marker) {
+                        marker.setLatLng([lat, lon]);
+                    } else {
+                        marker = L.marker([lat, lon]).addTo(map);
+                    }
+                }, function(error) {
+                    alert("Unable to retrieve your location.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Function to update map when latitude and longitude are input
+        function updateMap() {
+            var lat = parseFloat(document.getElementById('latitude_input').value);
+            var lon = parseFloat(document.getElementById('longitude_input').value);
+
+            if (!isNaN(lat) && !isNaN(lon)) {
+                map.setView([lat, lon], 12);
+
+                if (marker) {
+                    marker.setLatLng([lat, lon]);
+                } else {
+                    marker = L.marker([lat, lon]).addTo(map);
+                }
+            }
+        }
     </script>
 </body>
 </html>

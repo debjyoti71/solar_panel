@@ -76,7 +76,7 @@ daily_dataframe = pd.DataFrame(data=daily_data)
 #print(daily_dataframe)
 
 # Assuming base efficiency of solar panel
-base_efficiency = 0.21  # 17% base efficiency
+base_efficiency = 0.21  # 21% base efficiency
 
 # Temperature correction: Reduce efficiency by 0.5% per degree Celsius above 25°C
 hourly_dataframe["temperature_correction_factor"] = 1 - (hourly_dataframe["temperature_2m"] - 25).clip(lower=0) * 0.005
@@ -99,7 +99,7 @@ hourly_dataframe["adjusted_efficiency"] = base_efficiency * hourly_dataframe["to
 
 # Calculate hourly energy production (in kWh) considering panel size (2 kW panel assumed for this example)
 correction_factor = 8.3847
-panel_size_kw = 1  # 2 kW panel
+panel_size_kw = 1  # 1 kW panel
 hourly_dataframe["energy_kwh"] = hourly_dataframe["direct_radiation"] * hourly_dataframe["adjusted_efficiency"] * panel_size_kw / 1000
 
 # Total energy produced in a day (kWh)
