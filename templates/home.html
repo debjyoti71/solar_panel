@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Panel Energy Calculator</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Leaflet.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav>
+        <div class="nav-container">
+            <h2>Solar Energy Calculator</h2>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/login">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Section -->
+    <main>
+        <h1>Solar Panel Energy Calculator</h1>
+        <form method="POST" action="/" id="solarCalculator">
+            <!-- Energy Consumption Input -->
+            <label for="energy_consumption">Your Energy Consumption (in kWh):</label>
+            <input type="text" name="energy_consumption" id="energy_consumption" placeholder="e.g., 300" required>
+
+            <!-- Location Input Options -->
+            <h3>Select Location</h3>
+            <input type="radio" id="manual" name="location_option" value="manual" checked>
+            <label for="manual">Enter Latitude and Longitude</label><br>
+            <input type="text" name="latitude" id="latitude_input" placeholder="Latitude" required oninput="updateMap()">
+            <input type="text" name="longitude" id="longitude_input" placeholder="Longitude" required oninput="updateMap()">
+            <button type="button" onclick="detectLocation()">Use GPS Location</button><br><br>
+            <input type="radio" id="map_option" name="location_option" value="map">
+            <label for="map_option">Drop a Pin on the Map</label>
+
+            <!-- Map Container -->
+            <div id="map" style="height: 400px; width: 100%;"></div>
+
+            <button type="submit">Calculate</button>
+        </form>
+
+        <!-- Results Section -->
+        {% if total_energy_kwh %}
+        <div class="results">
+            <h2>Results</h2>
+            <p><strong>Address:</strong> {{ location_address }}</p>
+            <p><strong>Energy Consumption:</strong> {{ energy_consumption }} kWh</p>
+            <p><strong>Average Daily Energy Production:</strong> {{ average_daily_energy_kwh }} kWh</p>
+            <p><strong>Number of 1 kW Solar Panels Needed:</strong> {{ panels_needed }}</p>
+        </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-about">
+                <h3>About Our Website</h3>
+                <p>Our Solar Energy Calculator helps estimate the number of solar panels needed for your energy consumption.</p>
+            </div>
+            <div class="footer-links">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About Us</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h3>Contact Us</h3>
+                <p>Email: @gmail.com</p>
+                <p>Phone: +91 xxxxxxxxxx</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Solar Energy Calculator. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Leaflet.js for Map -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script>
+        // Initialize the map with a default location (e.g., India)
+        var map = L.map('map').setView([22.737195, 88.190791], 5);
+
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var marker;
+
+        // Function to handle map click and place a marker
+        map.on('click', function(e) {
+            placeMarker(e.latlng);
+        });
+
+        // Function to place the marker and update the input fields
+        function placeMarker(location) {
+            if (marker) {
+                marker.setLatLng(location); // Update marker position
+            } else {
+                marker = L.marker(location).addTo(map); // Add new marker
+            }
+            // Update latitude and longitude input fields
+            document.getElementById("latitude_input").value = location.lat.toFixed(6);
+            document.getElementById("longitude_input").value = location.lng.toFixed(6);
+        }
+
+        // Function to get the user's current location using the browser's geolocation API
+        function detectLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var userLocation = [position.coords.latitude, position.coords.longitude];
+                    map.setView(userLocation, 12); // Zoom to user location
+                    placeMarker({lat: position.coords.latitude, lng: position.coords.longitude});
+                }, function() {
+                    alert("Unable to retrieve your location.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+    </script>
+</body>
+</html>
